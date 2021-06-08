@@ -1,6 +1,8 @@
 package servlets;
 
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -12,7 +14,7 @@ import models.Note;
  */
 public class NoteServlet extends HttpServlet {
 
-    private Note note;
+    Note note;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -35,13 +37,15 @@ public class NoteServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+       
 
         String title = request.getParameter("Title");
         String content = request.getParameter("Content");
-
-        note.setTitle("something");
-        note.setContent("elseeee");
+        Note note = new Note(title, content);
         
+         request.setAttribute("note", note);
+        writeEditedNoteToFile(note);
+
         getServletContext().getRequestDispatcher("/WEB-INF/viewnote.jsp").forward(request, response);
     }
 
@@ -50,7 +54,26 @@ public class NoteServlet extends HttpServlet {
         BufferedReader br = new BufferedReader(new FileReader(new File(path)));
         String title = br.readLine();
         String content = br.readLine();
+        br.close();
         Note note = new Note(title, content);
         return note;
+    }
+
+    private void writeEditedNoteToFile(Note note) {
+
+        String PATH = getServletContext().getRealPath("/WEB-INF/note.txt");
+        try {
+
+            File writer = new File(PATH);
+            PrintWriter save = new PrintWriter(writer);
+
+            save.println(note.getTitle());
+            save.println(note.getContent());
+
+            save.close();
+        } catch (IOException ex) {
+            Logger.getLogger(NoteServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 }

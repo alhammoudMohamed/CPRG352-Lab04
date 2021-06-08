@@ -16,7 +16,7 @@
 
            
             <p>Title</p>
-            <textarea name="Title" value="${note.title}"> ${note.title}</textarea>
+            <textarea name="Title" > ${note.title}</textarea>
             <br>
             <p>Content</p>
             <textarea name="Content"> ${note.content}</textarea>
